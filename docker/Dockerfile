@@ -35,14 +35,13 @@ RUN mkdir -p ${DEPS_WS}/src && \
     cd dynamixel_interfaces && git checkout 3392e1214c62c7ee9e05ccc811e3e829c063bae8 && cd .. && \
     git clone -b jazzy https://github.com/ROBOTIS-GIT/DynamixelSDK.git && \
     cd DynamixelSDK && git checkout 69b30fcab2fb1200b9b7aa884350352393f79552 && cd .. && \
-    git clone -b noble-jazzy-amd64 https://github.com/AndrejOrsula/pymoveit2.git && \
-    cd pymoveit2 && git checkout 4bde2ac4b230c5600b31f5d7fd2cd13b2c39f6d0 && cd .. && \
+    git clone -b main https://github.com/AndrejOrsula/pymoveit2.git && \
+    cd pymoveit2 && git checkout b25c9a6c294ef433b07b1eafc42a93d08d8612e5 && cd .. && \
     git clone -b r/4.56.4 https://github.com/IntelRealSense/realsense-ros.git && \
     cd realsense-ros && git checkout cbd8b8487d4c0126bb590822db9469414496e62a
 
 RUN cd ${DEPS_WS} && \
     apt-get update && \
-    apt-get install -y ./src/pymoveit2/ros-jazzy-pymoveit2_*.deb && \
     apt-get install -y --no-install-recommends \
     libfcl-dev \
     qt5-qmake \
