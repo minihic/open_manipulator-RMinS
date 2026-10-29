@@ -48,17 +48,22 @@ make bringup
 make moveit
 ```
 
-`make moveit` starts MoveIt headless (use Foxglove for visualization).
-`make moveit-gui` starts MoveIt with RViz instead.
+`make moveit` starts MoveIt with RViz; run `make gui-setup` once per local
+desktop session first. `make moveit-headless` starts MoveIt without RViz (use
+Foxglove for visualization).
 
 `USE_FAKE_HARDWARE=true` uses the mock hardware. Set it to `false` in `.env`
 for the real OpenManipulator-X and set `ROBOT_DEVICE` to the U2D2 device.
 
 ## Foxglove
 
-Foxglove is the default visualization path because it needs no X11:
+Foxglove needs no X11. Start MoveIt headless first, then the bridge:
 
 ```bash
+# terminal 2
+make moveit-headless
+
+# terminal 3
 make foxglove
 ```
 

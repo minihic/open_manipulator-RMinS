@@ -10,7 +10,7 @@ EXEC := $(COMPOSE) exec -T ros bash -lc
 ROS_SETUP := source /opt/ros/jazzy/setup.bash && source /workspace/install/setup.bash
 
 .PHONY: init doctor pull build up shell build-ws bringup moveit moveit-gui \
-	foxglove gui-setup ps logs config down clean
+	moveit-headless foxglove gui-setup ps logs config down clean
 
 init:
 	@if [ -f $(ENV_FILE) ]; then \
@@ -50,12 +50,14 @@ bringup:
 moveit:
 	$(EXEC) '$(ROS_SETUP) && \
 		ros2 launch open_manipulator_moveit_config open_manipulator_x_moveit.launch.py \
-			start_rviz:=false'
+			start_rviz:=true'
 
-moveit-gui:
+moveit-gui: moveit
+
+moveit-headless:
 	$(EXEC) '$(ROS_SETUP) && \
 		ros2 launch open_manipulator_moveit_config open_manipulator_x_moveit.launch.py \
-			start_rviz:=true'
+			start_rviz:=false'
 
 foxglove:
 	$(EXEC) '$(ROS_SETUP) && \

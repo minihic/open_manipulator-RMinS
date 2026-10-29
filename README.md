@@ -89,16 +89,19 @@ Run the arm stack in two host terminals:
 # terminal 1
 make bringup
 
-# terminal 2
+# terminal 2 (local desktop)
+make gui-setup   # once per desktop session
 make moveit
 ```
+
+`make moveit` opens MoveIt with RViz. `make moveit-headless` runs MoveIt
+without RViz, and `make moveit-gui` is an alias for `make moveit`.
 
 `USE_FAKE_HARDWARE=true` uses mock hardware. Set it to `false` and point
 `ROBOT_DEVICE` at the U2D2 device for the real arm.
 
-For headless visualization, run `make foxglove` and connect Foxglove Studio to
-`ws://localhost:8765`. For optional RViz, run `make gui-setup` and then
-`make moveit-gui` from a local desktop session.
+For headless visualization, run `make moveit-headless` and `make foxglove`,
+then connect Foxglove Studio to `ws://localhost:8765`.
 
 See [docs/docker.md](docs/docker.md) for device paths, GUI setup, and
 troubleshooting.
