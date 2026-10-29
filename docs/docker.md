@@ -48,6 +48,9 @@ make bringup
 make moveit
 ```
 
+`make moveit` starts MoveIt headless (use Foxglove for visualization).
+`make moveit-gui` starts MoveIt with RViz instead.
+
 `USE_FAKE_HARDWARE=true` uses the mock hardware. Set it to `false` in `.env`
 for the real OpenManipulator-X and set `ROBOT_DEVICE` to the U2D2 device.
 
@@ -115,6 +118,10 @@ make clean      # also removes build/install/log volumes
   host does not expose it. Check `lsusb` and `v4l2-ctl --list-devices`.
 - The container starts and immediately exits: run `make logs`. The workspace
   build probably failed.
+- `FastSyncRead Rx Fail` / `SYNC_READ_FAIL` errors from the Dynamixel hardware
+  interface: the U2D2 USB latency timer is too high. The entrypoint sets it to
+  1 ms automatically; outside the container, set it manually with
+  `echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer`.
 - The image cannot be pulled: run `make build` until the GHCR image is
   published by CI.
 - RViz cannot open the display: run `make gui-setup` from the local desktop

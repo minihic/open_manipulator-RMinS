@@ -327,6 +327,7 @@ ui_*.h
 
 ### (reserved)
 Makefile*
+!Makefile
 *build-*
 
 ## Qt unit tests
