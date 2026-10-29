@@ -11,8 +11,8 @@ ROS_SETUP := source /opt/ros/jazzy/setup.bash && source /workspace/install/setup
 
 SHUTDOWN_LANDER_PARAMS := /workspace/src/open_manipulator/docker/shutdown_home.yaml
 
-.PHONY: init doctor pull build up shell build-ws bringup moveit moveit-gui \
-	moveit-headless foxglove gui-setup arm-shutdown ps logs config down clean
+.PHONY: init doctor pull build up run shell build-ws bringup moveit moveit-gui \
+	moveit-headless gui-setup arm-shutdown ps logs config down clean
 
 init:
 	@if [ -f $(ENV_FILE) ]; then \
@@ -33,6 +33,21 @@ build:
 
 up:
 	$(COMPOSE) up -d
+
+run: up
+	@echo "Waiting for the ROS workspace to be ready..."
+	@for i in $$(seq 1 300); do \
+		if $(COMPOSE) exec -T ros test -f /workspace/install/setup.bash 2>/dev/null; then \
+			break; \
+		fi; \
+		sleep 1; \
+	done
+	@$(COMPOSE) exec -T ros test -f /workspace/install/setup.bash 2>/dev/null || \
+		{ echo "error: the workspace build did not finish; run 'make logs'"; exit 1; }
+	@if $(COMPOSE) exec -T ros pgrep -f 'open_manipulator_x.*launch.py' >/dev/null 2>&1; then \
+		echo "error: the arm stack is already running; run 'make down' first"; exit 1; \
+	fi
+	$(EXEC) 'exec /workspace/src/open_manipulator/docker/run_stack.sh'
 
 shell:
 	$(COMPOSE) exec ros bash
@@ -61,16 +76,15 @@ moveit-headless:
 		ros2 launch open_manipulator_moveit_config open_manipulator_x_moveit.launch.py \
 			start_rviz:=false'
 
-foxglove:
-	$(EXEC) '$(ROS_SETUP) && \
-		ros2 launch foxglove_bridge foxglove_bridge_launch.xml \
-			port:=$$FOXGLOVE_PORT'
-
 gui-setup:
 	xhost +SI:localuser:root
 
 arm-shutdown:
-	@if $(COMPOSE) ps --status running --services 2>/dev/null | grep -qx ros; then \
+	@if ! $(COMPOSE) ps --status running --services 2>/dev/null | grep -qx ros; then \
+		echo "Container is not running; skipping arm shutdown"; \
+	elif ! $(COMPOSE) exec -T ros pgrep -f 'open_manipulator_x.launch.py' >/dev/null 2>&1; then \
+		echo "Arm bringup is not running; skipping arm shutdown"; \
+	else \
 		echo "Moving arm to home position..."; \
 		$(EXEC) '$(ROS_SETUP) && \
 			ros2 run open_manipulator_bringup shutdown_lander \
@@ -82,8 +96,6 @@ arm-shutdown:
 				/dynamixel_hardware_interface/set_dxl_torque \
 				std_srvs/srv/SetBool "{data: false}"' \
 			|| echo "warning: could not disable motor torque"; \
-	else \
-		echo "Container is not running; skipping arm shutdown"; \
 	fi
 
 ps:

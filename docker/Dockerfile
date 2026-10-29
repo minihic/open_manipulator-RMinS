@@ -23,7 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-jazzy-camera-calibration \
     ros-jazzy-controller-manager \
     ros-jazzy-dynamixel-hardware-interface \
-    ros-jazzy-foxglove-bridge \
     ros-jazzy-image-proc \
     ros-jazzy-image-transport-plugins \
     ros-jazzy-joint-state-publisher \

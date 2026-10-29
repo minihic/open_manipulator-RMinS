@@ -3,7 +3,7 @@ set -euo pipefail
 
 if [ -z "${DISPLAY:-}" ]; then
     echo "error: DISPLAY is not set" >&2
-    echo "Run this from a local desktop session, or use Foxglove for headless work." >&2
+    echo "Run this from a local desktop session with DISPLAY set." >&2
     exit 1
 fi
 

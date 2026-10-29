@@ -83,14 +83,26 @@ make shell
 The first `make up` builds the workspace inside the container. After source
 changes, use `make build-ws` for new files or CMake/package metadata changes.
 
-Run the arm stack in two host terminals:
+For day-to-day use, one command starts the container, the arm bringup, and
+MoveIt with RViz:
+
+```bash
+make gui-setup   # once per local desktop session
+make run
+```
+
+`make run` waits for the workspace build on the first run, then starts
+bringup and MoveIt together. Ctrl-C stops both launches; the container stays
+up and the arm does not go home. For a safe stop, run `make down` in another
+terminal while the stack is still running.
+
+To run the pieces in separate terminals instead:
 
 ```bash
 # terminal 1
 make bringup
 
 # terminal 2 (local desktop)
-make gui-setup   # once per desktop session
 make moveit
 ```
 
@@ -103,9 +115,6 @@ without RViz, and `make moveit-gui` is an alias for `make moveit`.
 Stop everything with `make down`. It first moves the arm to the home position
 and disables motor torque, then removes the container. The arm is limp
 afterwards, so support it if it is not resting on the platform.
-
-For headless visualization, run `make moveit-headless` and `make foxglove`,
-then connect Foxglove Studio to `ws://localhost:8765`.
 
 See [docs/docker.md](docs/docker.md) for device paths, GUI setup, and
 troubleshooting.

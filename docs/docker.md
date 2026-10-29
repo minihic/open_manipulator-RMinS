@@ -38,7 +38,21 @@ make build-ws
 
 ## Run the robot stack
 
-Use two host terminals. Both commands run inside the same container.
+The common path starts the container, arm bringup, and MoveIt with RViz in one
+command:
+
+```bash
+make gui-setup   # once per local desktop session
+make run
+```
+
+`make run` starts the container if needed, waits for the workspace build, then
+runs bringup and MoveIt together. Ctrl-C stops both launches; the container
+stays up and the arm does not go home. For a safe stop, run `make down` in
+another terminal while the stack is still running; it homes the arm, disables
+motor torque, and removes the container.
+
+To start the pieces separately, use two host terminals:
 
 ```bash
 # terminal 1
@@ -48,26 +62,11 @@ make bringup
 make moveit
 ```
 
-`make moveit` starts MoveIt with RViz; run `make gui-setup` once per local
-desktop session first. `make moveit-headless` starts MoveIt without RViz (use
-Foxglove for visualization).
+`make moveit` starts MoveIt with RViz; `make moveit-headless` starts MoveIt
+without RViz.
 
 `USE_FAKE_HARDWARE=true` uses the mock hardware. Set it to `false` in `.env`
 for the real OpenManipulator-X and set `ROBOT_DEVICE` to the U2D2 device.
-
-## Foxglove
-
-Foxglove needs no X11. Start MoveIt headless first, then the bridge:
-
-```bash
-# terminal 2
-make moveit-headless
-
-# terminal 3
-make foxglove
-```
-
-Connect Foxglove Studio to `ws://localhost:8765` (`FOXGLOVE_PORT` in `.env`).
 
 ## Optional RViz
 
@@ -115,6 +114,7 @@ this, so support it if it is not resting on the platform.
 ## Useful commands
 
 ```bash
+make run        # container + bringup + MoveIt with RViz
 make ps
 make logs
 make config

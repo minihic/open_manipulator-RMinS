@@ -29,7 +29,6 @@ services:
       VIDEO_DEVICE: "${VIDEO_DEVICE:-/dev/video0}"
       INIT_POSITION: "${INIT_POSITION:-true}"
       START_RVIZ: "${START_RVIZ:-false}"
-      FOXGLOVE_PORT: "${FOXGLOVE_PORT:-8765}"
     volumes:
       - ../:/workspace/src/open_manipulator
       - ros-build:/workspace/build

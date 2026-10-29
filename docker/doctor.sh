@@ -96,7 +96,7 @@ if [ "$DOCKER_OK" -eq 1 ] && docker ps --filter 'name=^/open_manipulator_x_proje
     if [ -z "$PKGS" ]; then
         warn "could not list ROS packages in the container"
     else
-        for pkg in open_manipulator_bringup open_manipulator_description open_manipulator_demos open_manipulator_moveit_config open_manipulator_teleop moveit_ros_move_group pymoveit2 v4l2_camera usb_cam image_proc apriltag_ros foxglove_bridge; do
+        for pkg in open_manipulator_bringup open_manipulator_description open_manipulator_demos open_manipulator_moveit_config open_manipulator_teleop moveit_ros_move_group pymoveit2 v4l2_camera usb_cam image_proc apriltag_ros; do
             if grep -qx "$pkg" <<< "$PKGS"; then
                 ok "package: $pkg"
             else
@@ -146,7 +146,6 @@ printf '  USE_FAKE_HARDWARE: %s\n' "${USE_FAKE_HARDWARE:-<unset>}"
 printf '  ROBOT_DEVICE: %s\n' "${ROBOT_DEVICE:-<unset>}"
 printf '  VIDEO_DEVICE: %s\n' "${VIDEO_DEVICE:-<unset>}"
 printf '  START_RVIZ: %s\n' "${START_RVIZ:-<unset>}"
-printf '  FOXGLOVE_PORT: %s\n' "${FOXGLOVE_PORT:-<unset>}"
 
 if [ "${START_RVIZ:-false}" = "true" ]; then
     section "Display"
