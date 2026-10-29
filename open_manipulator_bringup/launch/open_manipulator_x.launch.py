@@ -44,7 +44,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'use_sim',
             default_value='false',
-            description='Start robot in Gazebo simulation.',
+            description='Use simulation time (Gazebo is not included in this fork).',
         ),
         DeclareLaunchArgument(
             'use_fake_hardware',

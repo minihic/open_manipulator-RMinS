@@ -4,7 +4,7 @@
   <name>open_manipulator_description</name>
   <version>4.0.9</version>
   <description>
-    open_manipulator_description ROS 2 package.
+    OpenManipulator-X description, meshes, and RViz configuration.
   </description>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
   <license>Apache 2.0</license>

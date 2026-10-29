@@ -3,7 +3,7 @@
 <package format="3">
   <name>open_manipulator_teleop</name>
   <version>4.0.9</version>
-  <description>OpenManipulator teleoperation package</description>
+  <description>OpenManipulator-X teleoperation package</description>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
   <license>Apache License 2.0</license>
   <author email="wsh@robotis.com">Sungho Woo</author>

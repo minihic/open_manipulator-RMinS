@@ -1,0 +1,13 @@
+This repository is a fork of:
+
+  https://github.com/snt-spacer/open_manipulator-RMinS
+
+which is derived from the ROBOTIS OpenManipulator project:
+
+  https://github.com/ROBOTIS-GIT/open_manipulator
+
+The original code is Copyright ROBOTIS CO., LTD. and the respective
+contributors, and is distributed under the Apache License 2.0.
+
+Modifications in this fork are maintained by the repository owner and are
+also distributed under the Apache License 2.0.

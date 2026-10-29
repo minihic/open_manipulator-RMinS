@@ -2,20 +2,14 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:macro name="open_manipulator_x_system" params="name prefix port_name:=^|/dev/ttyUSB0 use_sim:=^|false use_fake_hardware:=^|false fake_sensor_commands:=^|false">
     <ros2_control name="${name}" type="system">
-      <xacro:if value="$(arg use_sim)">
-        <hardware>
-          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
-      </xacro:if>
-      <xacro:unless value="$(arg use_sim)">
-        <hardware>
-          <xacro:if value="${use_fake_hardware}">
-            <plugin>mock_components/GenericSystem</plugin>
-            <param name="fake_sensor_commands">${fake_sensor_commands}</param>
-            <param name="state_following_offset">0.0</param>
-          </xacro:if>
-          <xacro:unless value="${use_fake_hardware}">
-            <plugin>dynamixel_hardware_interface/DynamixelHardware</plugin>
+      <hardware>
+        <xacro:if value="${use_fake_hardware}">
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="fake_sensor_commands">${fake_sensor_commands}</param>
+          <param name="state_following_offset">0.0</param>
+        </xacro:if>
+        <xacro:unless value="${use_fake_hardware}">
+          <plugin>dynamixel_hardware_interface/DynamixelHardware</plugin>
             <param name="port_name">${port_name}</param>
             <param name="baud_rate">1000000</param>
             <param name="error_timeout_ms">500</param>
@@ -49,9 +43,8 @@
             <param name="revolute_to_prismatic_joint">${prefix}gripper_left_joint</param>
             <param name="prismatic_max">0.019</param>
             <param name="prismatic_min">-0.01</param>
-          </xacro:unless>
-        </hardware>
-      </xacro:unless>
+        </xacro:unless>
+      </hardware>
 
       <joint name="${prefix}joint1">
         <command_interface name="position"/>
@@ -83,16 +76,6 @@
         <state_interface name="velocity"/>
         <state_interface name="effort"/>
       </joint>
-      <xacro:if value="$(arg use_sim)">
-        <joint name="${prefix}gripper_right_joint">
-          <param name="mimic">${prefix}gripper_left_joint</param>
-          <param name="multiplier">1</param>
-          <state_interface name="position"/>
-          <state_interface name="velocity"/>
-          <state_interface name="effort"/>
-        </joint>
-      </xacro:if>
-
       <gpio name="dxl1">
         <param name="type">dxl</param>
         <param name="ID">11</param>
