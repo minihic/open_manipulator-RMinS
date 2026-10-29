@@ -9,8 +9,10 @@ EXEC := $(COMPOSE) exec -T ros bash -lc
 
 ROS_SETUP := source /opt/ros/jazzy/setup.bash && source /workspace/install/setup.bash
 
+SHUTDOWN_LANDER_PARAMS := /workspace/src/open_manipulator/docker/shutdown_home.yaml
+
 .PHONY: init doctor pull build up shell build-ws bringup moveit moveit-gui \
-	moveit-headless foxglove gui-setup ps logs config down clean
+	moveit-headless foxglove gui-setup arm-shutdown ps logs config down clean
 
 init:
 	@if [ -f $(ENV_FILE) ]; then \
@@ -67,6 +69,23 @@ foxglove:
 gui-setup:
 	xhost +SI:localuser:root
 
+arm-shutdown:
+	@if $(COMPOSE) ps --status running --services 2>/dev/null | grep -qx ros; then \
+		echo "Moving arm to home position..."; \
+		$(EXEC) '$(ROS_SETUP) && \
+			ros2 run open_manipulator_bringup shutdown_lander \
+				--ros-args --params-file $(SHUTDOWN_LANDER_PARAMS)' \
+			|| echo "warning: could not move the arm to home"; \
+		echo "Disabling motor torque..."; \
+		$(EXEC) '$(ROS_SETUP) && \
+			timeout 10 ros2 service call \
+				/dynamixel_hardware_interface/set_dxl_torque \
+				std_srvs/srv/SetBool "{data: false}"' \
+			|| echo "warning: could not disable motor torque"; \
+	else \
+		echo "Container is not running; skipping arm shutdown"; \
+	fi
+
 ps:
 	$(COMPOSE) ps
 
@@ -76,8 +95,8 @@ logs:
 config:
 	$(COMPOSE) config
 
-down:
+down: arm-shutdown
 	$(COMPOSE) down
 
-clean:
+clean: arm-shutdown
 	$(COMPOSE) down -v

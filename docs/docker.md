@@ -104,6 +104,14 @@ VIDEO_DEVICE=/dev/v4l/by-id/usb-...
 The container is privileged and mounts `/dev`, so device indices may differ
 between machines without changing the compose file.
 
+## Stopping
+
+`make down` moves the arm to the home position used by bringup and then
+disables motor torque before stopping the container. The arm is limp after
+this, so support it if it is not resting on the platform.
+
+`make clean` does the same and also removes the build/install/log volumes.
+
 ## Useful commands
 
 ```bash
@@ -111,8 +119,8 @@ make ps
 make logs
 make config
 make doctor
-make down
-make clean      # also removes build/install/log volumes
+make down       # home arm, disable torque, stop container
+make clean      # same, also removes build/install/log volumes
 ```
 
 ## Troubleshooting
