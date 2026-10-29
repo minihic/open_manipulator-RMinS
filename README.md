@@ -15,13 +15,13 @@ This fork is being rebuilt for a smaller, Docker-based project environment.
 
 - [x] Fork created
 - [x] Course-only packages and assets removed
-- [ ] Minimal Docker environment
+- [x] Minimal Docker environment
 - [ ] Camera and AprilTag packages
 - [ ] Hand-eye calibration
 - [ ] Tag tracking and grasping
 
-The Docker environment and camera/AprilTag integration are the next phases.
-Nothing in this fork should be assumed to run end-to-end yet.
+The camera/AprilTag integration is the next phase. The arm stack can already be
+built and run in the container.
 
 ## Robot
 
@@ -40,15 +40,15 @@ open_manipulator_description/    OpenManipulator-X URDF, meshes, RViz config
 open_manipulator_moveit_config/  MoveIt 2 configuration
 open_manipulator_demos/          Small MoveIt examples and validation helpers
 open_manipulator_teleop/         Keyboard teleoperation
+docker/                          Minimal Docker environment
+docs/                            Docker and project notes
 ```
 
 Future additions:
 
 ```text
-docker/                          Minimal Docker environment
 open_manipulator_perception/     Camera, image_proc, AprilTag detection
 project_apps/                    Target tracking and grasp application
-docs/                            Hardware, calibration, troubleshooting
 ```
 
 ## What was removed
@@ -61,10 +61,51 @@ docs/                            Hardware, calibration, troubleshooting
   controllers.
 - The old course Docker setup and course documentation.
 
-## Building
+## Docker quick start
 
-The packages target **ROS 2 Jazzy**. Until the Docker environment is added,
-build them in a normal Jazzy workspace:
+The primary environment is a single persistent ROS 2 Jazzy container. It uses
+a mounted source tree and named build/install/log volumes. The image contains
+dependencies only; it does not copy or build the repository.
+
+Prerequisites: Linux, Docker Engine, the Compose plugin, and your user in the
+`docker` group.
+
+```bash
+cp .env.example .env
+# edit device paths and USE_FAKE_HARDWARE in .env
+make init
+make doctor
+make pull       # or: make build
+make up
+make shell
+```
+
+The first `make up` builds the workspace inside the container. After source
+changes, use `make build-ws` for new files or CMake/package metadata changes.
+
+Run the arm stack in two host terminals:
+
+```bash
+# terminal 1
+make bringup
+
+# terminal 2
+make moveit
+```
+
+`USE_FAKE_HARDWARE=true` uses mock hardware. Set it to `false` and point
+`ROBOT_DEVICE` at the U2D2 device for the real arm.
+
+For headless visualization, run `make foxglove` and connect Foxglove Studio to
+`ws://localhost:8765`. For optional RViz, run `make gui-setup` and then
+`make moveit-gui` from a local desktop session.
+
+See [docs/docker.md](docs/docker.md) for device paths, GUI setup, and
+troubleshooting.
+
+## Native build (alternative)
+
+The packages target **ROS 2 Jazzy** and can also be built in a normal workspace:
 
 ```bash
 mkdir -p ~/ros2_ws/src

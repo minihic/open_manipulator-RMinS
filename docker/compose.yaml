@@ -1,0 +1,44 @@
+name: open-manipulator-x-project
+
+services:
+  ros:
+    image: ${OPEN_MANIPULATOR_IMAGE:-ghcr.io/minihic/open-manipulator-rmins:latest}
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: open_manipulator_x_project
+    init: true
+    tty: true
+    stdin_open: true
+    network_mode: host
+    ipc: host
+    privileged: true
+    working_dir: /workspace
+    entrypoint: /workspace/src/open_manipulator/docker/entrypoint.sh
+    command: sleep infinity
+    stop_grace_period: 10s
+    environment:
+      DISPLAY: "${DISPLAY:-}"
+      ROS_DOMAIN_ID: "${ROS_DOMAIN_ID:-30}"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: "${ROS_AUTOMATIC_DISCOVERY_RANGE:-LOCALHOST}"
+      RMW_IMPLEMENTATION: "${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}"
+      PYTHONDONTWRITEBYTECODE: "1"
+      QT_X11_NO_MITSHM: "1"
+      USE_FAKE_HARDWARE: "${USE_FAKE_HARDWARE:-true}"
+      ROBOT_DEVICE: "${ROBOT_DEVICE:-/dev/ttyUSB0}"
+      VIDEO_DEVICE: "${VIDEO_DEVICE:-/dev/video0}"
+      INIT_POSITION: "${INIT_POSITION:-true}"
+      START_RVIZ: "${START_RVIZ:-false}"
+      FOXGLOVE_PORT: "${FOXGLOVE_PORT:-8765}"
+    volumes:
+      - ../:/workspace/src/open_manipulator
+      - ros-build:/workspace/build
+      - ros-install:/workspace/install
+      - ros-log:/workspace/log
+      - /dev:/dev
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+volumes:
+  ros-build:
+  ros-install:
+  ros-log:
