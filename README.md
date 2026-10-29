@@ -112,9 +112,9 @@ without RViz, and `make moveit-gui` is an alias for `make moveit`.
 `USE_FAKE_HARDWARE=true` uses mock hardware. Set it to `false` and point
 `ROBOT_DEVICE` at the U2D2 device for the real arm.
 
-Stop everything with `make down`. It first moves the arm to the home position
-and disables motor torque, then removes the container. The arm is limp
-afterwards, so support it if it is not resting on the platform.
+Stop everything with `make down`. It first moves the arm to the folded rest
+position and disables motor torque, then removes the container. The arm is
+limp afterwards, so support it if it is not resting on the platform.
 
 See [docs/docker.md](docs/docker.md) for device paths, GUI setup, and
 troubleshooting.

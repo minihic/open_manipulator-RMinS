@@ -105,7 +105,8 @@ between machines without changing the compose file.
 
 ## Stopping
 
-`make down` moves the arm to the home position used by bringup and then
+`make down` moves the arm to the folded rest position used by
+`shutdown_lander` (joint2 -127.5°, joint3 87.5°, joint4 42.5°) and then
 disables motor torque before stopping the container. The arm is limp after
 this, so support it if it is not resting on the platform.
 

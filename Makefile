@@ -9,8 +9,6 @@ EXEC := $(COMPOSE) exec -T ros bash -lc
 
 ROS_SETUP := source /opt/ros/jazzy/setup.bash && source /workspace/install/setup.bash
 
-SHUTDOWN_LANDER_PARAMS := /workspace/src/open_manipulator/docker/shutdown_home.yaml
-
 .PHONY: init doctor pull build up run shell build-ws bringup moveit moveit-gui \
 	moveit-headless gui-setup arm-shutdown ps logs config down clean
 
@@ -85,11 +83,10 @@ arm-shutdown:
 	elif ! $(COMPOSE) exec -T ros pgrep -f 'open_manipulator_x.launch.py' >/dev/null 2>&1; then \
 		echo "Arm bringup is not running; skipping arm shutdown"; \
 	else \
-		echo "Moving arm to home position..."; \
+		echo "Moving arm to rest position..."; \
 		$(EXEC) '$(ROS_SETUP) && \
-			ros2 run open_manipulator_bringup shutdown_lander \
-				--ros-args --params-file $(SHUTDOWN_LANDER_PARAMS)' \
-			|| echo "warning: could not move the arm to home"; \
+			ros2 run open_manipulator_bringup shutdown_lander' \
+			|| echo "warning: could not move the arm to the rest position"; \
 		echo "Disabling motor torque..."; \
 		$(EXEC) '$(ROS_SETUP) && \
 			timeout 10 ros2 service call \
