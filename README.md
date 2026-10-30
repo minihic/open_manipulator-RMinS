@@ -87,14 +87,14 @@ For day-to-day use, one command starts the container, the arm bringup, and
 MoveIt with RViz:
 
 ```bash
-make gui-setup   # once per local desktop session
 make run
 ```
 
-`make run` waits for the workspace build on the first run, then starts
-bringup and MoveIt together. Ctrl-C stops both launches; the container stays
-up and the arm does not go home. For a safe stop, run `make down` in another
-terminal while the stack is still running.
+`make run` waits for the workspace build on the first run, grants the container
+access to your X display (best effort, so it still works headless), then starts
+bringup and MoveIt together. Ctrl-C is a safe stop: it moves the arm to the
+folded rest position, disables motor torque, and stops both launches. The
+container stays up, so the next `make run` is quick.
 
 To run the pieces in separate terminals instead:
 

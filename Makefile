@@ -33,6 +33,8 @@ up:
 	$(COMPOSE) up -d
 
 run: up
+	@./docker/x11.sh || \
+		echo "warning: X11 access is not configured; RViz may not be able to open the display"
 	@echo "Waiting for the ROS workspace to be ready..."
 	@for i in $$(seq 1 300); do \
 		if $(COMPOSE) exec -T ros test -f /workspace/install/setup.bash 2>/dev/null; then \
@@ -45,7 +47,7 @@ run: up
 	@if $(COMPOSE) exec -T ros pgrep -f 'open_manipulator_x.*launch.py' >/dev/null 2>&1; then \
 		echo "error: the arm stack is already running; run 'make down' first"; exit 1; \
 	fi
-	$(EXEC) 'exec /workspace/src/open_manipulator/docker/run_stack.sh'
+	@./docker/run.sh
 
 shell:
 	$(COMPOSE) exec ros bash
@@ -75,7 +77,7 @@ moveit-headless:
 			start_rviz:=false'
 
 gui-setup:
-	xhost +SI:localuser:root
+	@./docker/x11.sh
 
 arm-shutdown:
 	@if ! $(COMPOSE) ps --status running --services 2>/dev/null | grep -qx ros; then \
@@ -83,16 +85,9 @@ arm-shutdown:
 	elif ! $(COMPOSE) exec -T ros pgrep -f 'open_manipulator_x.launch.py' >/dev/null 2>&1; then \
 		echo "Arm bringup is not running; skipping arm shutdown"; \
 	else \
-		echo "Moving arm to rest position..."; \
-		$(EXEC) '$(ROS_SETUP) && \
-			ros2 run open_manipulator_bringup shutdown_lander' \
-			|| echo "warning: could not move the arm to the rest position"; \
-		echo "Disabling motor torque..."; \
-		$(EXEC) '$(ROS_SETUP) && \
-			timeout 10 ros2 service call \
-				/dynamixel_hardware_interface/set_dxl_torque \
-				std_srvs/srv/SetBool "{data: false}"' \
-			|| echo "warning: could not disable motor torque"; \
+		echo "Moving arm to rest position and disabling motor torque..."; \
+		$(EXEC) '/workspace/src/open_manipulator/docker/arm_shutdown.sh' \
+			|| echo "warning: arm shutdown reported an error"; \
 	fi
 
 ps:

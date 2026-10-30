@@ -42,15 +42,18 @@ The common path starts the container, arm bringup, and MoveIt with RViz in one
 command:
 
 ```bash
-make gui-setup   # once per local desktop session
 make run
 ```
 
-`make run` starts the container if needed, waits for the workspace build, then
-runs bringup and MoveIt together. Ctrl-C stops both launches; the container
-stays up and the arm does not go home. For a safe stop, run `make down` in
-another terminal while the stack is still running; it homes the arm, disables
-motor torque, and removes the container.
+`make run` starts the container if needed, grants the container access to your
+X display, waits for the workspace build, then runs bringup and MoveIt together.
+The display setup is best effort, so `make run` still works without a local X
+session (RViz then fails to open).
+
+Ctrl-C is a safe stop: `make run` moves the arm to its folded rest position,
+disables motor torque, and then stops both launches. The container stays up, so
+the next `make run` is quick. Pressing Ctrl-C again while the arm is moving does
+not interrupt the landing.
 
 To start the pieces separately, use two host terminals:
 
@@ -70,7 +73,8 @@ for the real OpenManipulator-X and set `ROBOT_DEVICE` to the U2D2 device.
 
 ## Optional RViz
 
-RViz needs a local X11 display:
+RViz needs a local X11 display. `make run` grants the container access
+automatically; to do it on its own (for example before `make moveit-gui`):
 
 ```bash
 make gui-setup
@@ -105,10 +109,16 @@ between machines without changing the compose file.
 
 ## Stopping
 
-`make down` moves the arm to the folded rest position used by
-`shutdown_lander` (joint2 -127.5°, joint3 87.5°, joint4 42.5°) and then
-disables motor torque before stopping the container. The arm is limp after
+Ctrl-C in `make run` is a safe stop: it lands the arm at the folded rest
+position used by `shutdown_lander` (joint2 -127.5°, joint3 87.5°, joint4
+42.5°), disables motor torque, and stops the launches. The arm is limp after
 this, so support it if it is not resting on the platform.
+
+If a launch exits on its own (crash, or `start_rviz` failing), `make run` lands
+the arm the same way and exits with that launch's status.
+
+`make down` performs the same arm shutdown (skipped when the stack is not
+running) and then removes the container.
 
 `make clean` does the same and also removes the build/install/log volumes.
 
